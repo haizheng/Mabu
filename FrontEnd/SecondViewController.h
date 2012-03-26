@@ -14,9 +14,12 @@
 @interface SecondViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 {
     NSArray *listData;
+    UITableView* tv;
 }
 
 @property (nonatomic, retain) NSArray *listData;
+@property(nonatomic,retain)UITableView* tv;
 
+-(void)TReloadData;
 
 @end
