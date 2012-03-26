@@ -16,6 +16,12 @@
 
 @implementation SecondViewController
 @synthesize listData;
+@synthesize tv;
+
+-(void)TReloadData{
+    [self readDB];
+    [self.tv reloadData];
+}
 
 - (NSString *)dataFilePath {//数据库路径
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -34,7 +40,7 @@
     return self;
 }
 
-- (void)viewDidLoad 
+-(void)readDB
 {
     NSMutableArray *array = [[NSMutableArray alloc] initWithObjects:nil];//初始化数组
     sqlite3 *database;
@@ -68,7 +74,17 @@
     
     self.listData = array;
     [array release];
+    
+}
+
+- (void)viewDidLoad 
+{
+    [self readDB];
     [super viewDidLoad];
+    tv = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, 320, 416) style:UITableViewStyleGrouped];
+    tv.dataSource =self;
+    tv.delegate=self;
+    [self.view addSubview:tv];
 }
 
 - (void)didReceiveMemoryWarning 
@@ -83,13 +99,14 @@
 {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
-	self.listData = nil;
+    self.listData = nil;
     [super viewDidUnload];
 }
 
 
 - (void)dealloc {
-	[listData release];
+    [listData release];
+    [tv release];
     [super dealloc];
 }
 
@@ -121,7 +138,7 @@
     NSUInteger row = [indexPath row];//显示行
     cell.textLabel.text = [listData objectAtIndex:row];//从数组获取数据
     //	cell.textLabel.font = [UIFont boldSystemFontOfSize:20];//字体大小
-    cell.textLabel.font=[UIFont fontWithName:@"Helvetica-Bold" size:14];
+    cell.textLabel.font=[UIFont fontWithName:@"Helvetica-Bold" size:12];
     cell.backgroundColor = [UIColor blueColor];
     cell.textLabel.textColor = [UIColor redColor];
     //  cell.textLabel.
