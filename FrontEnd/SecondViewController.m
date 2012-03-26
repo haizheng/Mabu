@@ -132,7 +132,7 @@
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SimpleTableIdentifier] autorelease];
     }
 	
-	UIImage *image = [UIImage imageNamed:@"first@2x.png"];//图片
+    UIImage *image = [UIImage imageNamed:@"first@2x.png"];//图片
     cell.imageView.image = image;
     
     NSUInteger row = [indexPath row];//显示行
@@ -178,11 +178,11 @@
 	
     NSString *message = [[NSString alloc] initWithFormat:@"You selected %@", rowValue];//提示语言
     UIAlertView *alert = [[UIAlertView alloc]//提示框
-						  initWithTitle:@"Row Selected!"
-						  message:message
-						  delegate:nil
-						  cancelButtonTitle:@"Yes I Did"
-						  otherButtonTitles:nil];
+			initWithTitle:@"Row Selected!"
+			message:message
+			delegate:nil
+			cancelButtonTitle:@"Yes I Did"
+			otherButtonTitles:nil];
     [alert show];
     [message release];
     [alert release];
