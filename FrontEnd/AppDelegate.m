@@ -16,11 +16,15 @@
 
 @synthesize window = _window;
 @synthesize tabBarController = _tabBarController;
+@synthesize viewController1;
+@synthesize viewController2;
 
 - (void)dealloc
 {
     [_window release];
     [_tabBarController release];
+    [viewController1 release];
+    [viewController2 release];
     [super dealloc];
 }
 
@@ -28,10 +32,13 @@
 {
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
-    UIViewController *viewController1 = [[[FirstViewController alloc] initWithNibName:@"FirstViewController" bundle:nil] autorelease];
-    UIViewController *viewController2 = [[[SecondViewController alloc] initWithNibName:@"SecondViewController" bundle:nil] autorelease];
-    self.tabBarController = [[[UITabBarController alloc] init] autorelease];
-    self.tabBarController.viewControllers = [NSArray arrayWithObjects:viewController1, viewController2, nil];
+    viewController1 = [[FirstViewController alloc] init] ;
+    viewController2 = [[SecondViewController alloc] init] ;
+    self.tabBarController = [[UITabBarController alloc] init];
+    self.tabBarController.delegate =self;
+   
+    self.tabBarController.viewControllers = [[[NSArray alloc]initWithObjects:viewController1,viewController2, nil]autorelease];
+    self.tabBarController.selectedIndex =0;
     self.window.rootViewController = self.tabBarController;
     [self.window makeKeyAndVisible];
     return YES;
@@ -64,6 +71,12 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
+{
+    if ([viewController isEqual:self.viewController2 ] ) {
+        [self.viewController2 TReloadData];
+    }
+}
 /*
 // Optional UITabBarControllerDelegate method.
 - (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(UIViewController *)viewController
