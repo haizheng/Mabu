@@ -8,7 +8,7 @@
 
 #import "FirstViewController.h"
 #import <sqlite3.h> 
-
+#import "SecondViewController.h"
 @interface FirstViewController ()
 
 @end
@@ -229,6 +229,9 @@ int ID = 1;
     sqlite3_finalize(statement);
     sqlite3_close(database);
     //插入数据成功
+    
+    UIViewController *viewController2 = [[[SecondViewController alloc] initWithNibName:@"SecondViewController" bundle:nil] autorelease];
+    [viewController2.view reloadInputViews];
 }
 
 -(IBAction)readDBImage:(id)sender
