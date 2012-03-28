@@ -14,13 +14,14 @@
     IBOutlet UIImageView* imgView;//让用户点击以选取图片，并显示选择的图片
 }
 
-
+- (IBAction)grabURL:(id)sender;
 - (IBAction)Resize:(id)sender;
 - (IBAction)Originalsize:(id)sender;
 - (IBAction)insertImageToDB:(id)sender;
 - (IBAction)readDBImage:(id)sender;
 - (IBAction)Opendatabase:(id)sender;
-
+- (IBAction)selectPhoto:(id)sender;
+- (IBAction)showInBrowser:(id)sender;
 
 @property (nonatomic,retain) UIImagePickerController *imgPickerCtrller;
 @property (strong, nonatomic) IBOutlet UIImageView *imageView;

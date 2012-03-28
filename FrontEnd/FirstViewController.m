@@ -6,9 +6,14 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+
 #import "FirstViewController.h"
 #import <sqlite3.h> 
 #import "SecondViewController.h"
+#import "Constants.h"
+#import <AWSiOSSDK/S3/AmazonS3Client.h>
+#import "ASIHTTPRequest.h"
+
 @interface FirstViewController ()
 
 @end
@@ -38,6 +43,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    if ( [ACCESS_KEY_ID isEqualToString:@"CHANGE ME"]) 
+    {
+        [[Constants credentialsAlert] show];
+    }
     imageView.frame = CGRectMake(0, 0, 320, 460);//图片覆盖整个画面
     if (imgPickerCtrller==nil) {//判断是否已经初始化imgPickerCtrller
         UIImagePickerController* aImgPickerCtrller = [[UIImagePickerController alloc] init];//初始化一个UIImagePickerController
@@ -66,8 +75,80 @@
     }
 }
 
-static NSString *image_name;//图片名字
+//static NSString *image_name;//图片名字
 
+-(IBAction)selectPhoto:(id)sender
+{
+    UIImagePickerController *imagePicker = [[[UIImagePickerController alloc] init] autorelease];
+    imagePicker.delegate = self;
+    [self presentModalViewController:imagePicker animated:YES];
+}
+
+-(IBAction)showInBrowser:(id)sender
+{
+    // Initial the S3 Client.
+    AmazonS3Client *s3 = [[[AmazonS3Client alloc] initWithAccessKey:ACCESS_KEY_ID withSecretKey:SECRET_KEY] autorelease];
+    
+    @try {
+        // Set the content type so that the browser will treat the URL as an image.
+        S3ResponseHeaderOverrides *override = [[[S3ResponseHeaderOverrides alloc] init] autorelease];
+        override.contentType = @"image/jpeg";
+        
+        // Request a pre-signed URL to picture that has been uplaoded.
+        S3GetPreSignedURLRequest *gpsur = [[[S3GetPreSignedURLRequest alloc] init] autorelease];
+        gpsur.key                     = PICTURE_NAME;
+        gpsur.bucket                  = [Constants pictureBucket];
+        gpsur.expires                 = [NSDate dateWithTimeIntervalSinceNow:(NSTimeInterval) 3600]; // Added an hour's worth of seconds to the current time.
+        gpsur.responseHeaderOverrides = override;
+        
+        // Get the URL
+        NSURL *url = [s3 getPreSignedURL:gpsur];
+        
+        // Display the URL in Safari
+        [[UIApplication sharedApplication] openURL:url];
+    }
+    @catch (AmazonClientException *exception) {
+        [Constants showAlertMessage:exception.message withTitle:@"Browser Error"];
+    }
+}
+
+-(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    // Get the selected image.
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    
+    // Convert the image to JPEG data.
+    NSData *imageData = UIImageJPEGRepresentation(image, 1.0);
+    
+    // Initial the S3 Client.
+    AmazonS3Client *s3 = [[[AmazonS3Client alloc] initWithAccessKey:ACCESS_KEY_ID withSecretKey:SECRET_KEY] autorelease];
+    
+    @try {
+        // Create the picture bucket.
+        //[s3 createBucket:[[[S3CreateBucketRequest alloc] initWithName:[Constants pictureBucket]] autorelease]];
+        
+        // Upload image data.  Remember to set the content type.
+        S3PutObjectRequest *por = [[[S3PutObjectRequest alloc] initWithKey:PICTURE_NAME inBucket:[Constants pictureBucket]] autorelease];
+        por.contentType = @"image/jpeg";
+        por.data        = imageData;
+        
+        // Put the image data into the specified s3 bucket and object.
+        [s3 putObject:por];
+    }
+    @catch (AmazonClientException *exception) {
+        [Constants showAlertMessage:exception.message withTitle:@"Upload Error"];
+    }
+    
+    [picker dismissModalViewControllerAnimated:YES];
+}
+
+-(void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker dismissModalViewControllerAnimated:YES];
+}
+
+
+/*
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)img editingInfo:(NSDictionary *)editInfo 
 {
     imgView.image = img;
@@ -96,7 +177,7 @@ static NSString *image_name;//图片名字
     
     [[picker parentViewController] dismissModalViewControllerAnimated:YES];
 }
-
+*/
 - (IBAction)Resize:(id)sender
 {
     [UIView beginAnimations:@"show" context:NULL];
@@ -123,11 +204,86 @@ static NSString *image_name;//图片名字
     [imageView release];
     [super dealloc];
 }
+/*
+- (IBAction)grabURL:(id)sender//异步请求
+{
+    NSURL *url = [NSURL URLWithString:@"http://192.168.1.120/yii-guan/project1/index.php?r=post/service"];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];        
+    [request setDelegate:self];
+    [request startAsynchronous];
+}
+- (void)requestFinished:(ASIHTTPRequest *)request
+{
+        // 当以文本形式读取返回内容时用这个方法
+    NSString *responseString = [request responseString];
+    NSLog(@"responseString = %@",responseString);
+        // 当以二进制形式读取返回内容时用这个方法
+    NSData *responseData = [request responseData];
+    NSLog(@"responseData = %@",responseData);
+}
+	 
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    NSError *error = [request error];
+}
+*/
+
+- (IBAction)grabURL:(id)sender//同步请求
+{
+    /*//封装soap请求消息
+    NSString *soapMessage = [NSString stringWithFormat:
+                             @"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                             "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
+                             "<soap:Body>\n"
+                             "<getHelloRequest xmlns=\"http://192.168.1.120/yii-guan/project1/index.php?r=post/service\">\n"
+                            
+                             "</getHelloRequest>\n"
+                             "</soap:Body>\n"
+                             "</soap:Envelope>\n"
+                             ];
+    NSLog(@"soapMessage=%@",soapMessage);
+    NSURL *url = [NSURL URLWithString:@"http://www.nanonull.com/TimeService/TimeService.asmx"];
+    NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:url];
+    NSString *msgLength = [NSString stringWithFormat:@"%d", [soapMessage length]];
+    
+    //以下对请求信息添加属性前四句是必有的，第五句是soap信息。
+    [theRequest addValue: @"text/xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+    [theRequest addValue: @"http://www.Nanonull.com/TimeService/getOffesetUTCTime" forHTTPHeaderField:@"SOAPAction"];
+    
+    [theRequest addValue: msgLength forHTTPHeaderField:@"Content-Length"];
+    [theRequest setHTTPMethod:@"POST"];
+    [theRequest setHTTPBody: [soapMessage dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    //请求
+    NSURLConnection *theConnection = [[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
+    NSString *response = [theRequest responseString];
+    NSLog(@"response = %@",response);
+    
+    //如果连接已经建好，则初始化data
+    if( theConnection )
+    {
+        NSData = [[NSMutableData data] retain];
+    }
+    else
+    {
+        NSLog(@"theConnection is NULL");
+    }    */
+    
+    NSURL *url = [NSURL URLWithString:@"http://192.168.1.120/yii-guan/project1/index.php?r=post/service"];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    [request startSynchronous];
+    NSError *error = [request error];
+    if (!error) 
+    {
+        NSString *response = [request responseString];
+        NSLog(@"response = %@",response);
+    }
+}
 
 NSData * UIImageJPEGRepresentation (//图片数据转化为NSData
-                                    UIImage *image,
-                                    CGFloat compressionQuality
-                                    );
+    UIImage *image,
+    CGFloat compressionQuality
+);
 
 
 - (IBAction)Opendatabase:(id)sender 
@@ -143,7 +299,7 @@ NSData * UIImageJPEGRepresentation (//图片数据转化为NSData
 	
     char *errorMsg;
     //  NSString *createSQL = @"CREATE TABLE IF NOT EXISTS channel2 (id integer primary key, cid text, title text, imageData BLOB, imageLen integer, imageWeight integer);";
-    NSString *createSQL = @"CREATE TABLE IF NOT EXISTS IMAGE (image_ID integer primary key, image BLOB, date text);";
+    NSString *createSQL = @"CREATE TABLE IF NOT EXISTS IMAGE1 (image_ID integer primary key, image BLOB, date text);";
     
     if (sqlite3_exec (database, [createSQL UTF8String],NULL, NULL, &errorMsg) != SQLITE_OK)//1打开数据库句柄,2SQL语句,34待定,5错误信息
     {

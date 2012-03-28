@@ -1,0 +1,125 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP
+END
+ASIHTTPRequest.m
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIHTTPRequest.m
+END
+ASICacheDelegate.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASICacheDelegate.h
+END
+ASINetworkQueue.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASINetworkQueue.h
+END
+ASIDataDecompressor.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIDataDecompressor.h
+END
+ASIAuthenticationDialog.h
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIAuthenticationDialog.h
+END
+ASIProgressDelegate.h
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIProgressDelegate.h
+END
+ASIDownloadCache.m
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIDownloadCache.m
+END
+ASINetworkQueue.m
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASINetworkQueue.m
+END
+ASIDataDecompressor.m
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIDataDecompressor.m
+END
+ASIAuthenticationDialog.m
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIAuthenticationDialog.m
+END
+ASIFormDataRequest.h
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIFormDataRequest.h
+END
+ASIInputStream.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIInputStream.h
+END
+ASIFormDataRequest.m
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIFormDataRequest.m
+END
+ASIHTTPRequestConfig.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIHTTPRequestConfig.h
+END
+ASIInputStream.m
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIInputStream.m
+END
+ASIHTTPRequestDelegate.h
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIHTTPRequestDelegate.h
+END
+ASIDataCompressor.h
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIDataCompressor.h
+END
+ASIHTTPRequest.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIHTTPRequest.h
+END
+ASIDownloadCache.h
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIDownloadCache.h
+END
+ASIDataCompressor.m
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/BookStore/!svn/ver/18/trunk/Classes/ASIHTTP/ASIDataCompressor.m
+END

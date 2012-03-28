@@ -18,8 +18,9 @@
 }
 
 @property (nonatomic, retain) NSArray *listData;
-@property(nonatomic,retain)UITableView* tv;
+@property (nonatomic,retain) UITableView* tv;
 
 -(void)TReloadData;
 
 @end
+
