@@ -39,7 +39,6 @@
 		07904F521522F3D500E70824 /* ASIInputStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 07904F461522F3D500E70824 /* ASIInputStream.m */; };
 		07904F531522F3D500E70824 /* ASINetworkQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 07904F481522F3D500E70824 /* ASINetworkQueue.m */; };
 		07904F541522F3D500E70824 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 07904F4B1522F3D500E70824 /* Reachability.m */; };
-		07904F5A15231CA700E70824 /* AWSiOSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07904F5915231CA700E70824 /* AWSiOSSDK.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -113,7 +112,6 @@
 				0789F4A4151ADF5000D0B1B9 /* Foundation.framework in Frameworks */,
 				0789F4A6151ADF5000D0B1B9 /* CoreGraphics.framework in Frameworks */,
 				078B7C31152196CE00B707E9 /* AWSiOSSDK.framework in Frameworks */,
-				07904F5A15231CA700E70824 /* AWSiOSSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

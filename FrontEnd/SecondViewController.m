@@ -52,7 +52,7 @@
     NSLog(@"open database success!"); 
     
     sqlite3_stmt *statement = nil;
-    char *sql = "SELECT * FROM IMAGE1;";
+    char *sql = "SELECT * FROM Front;";
     if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) != SQLITE_OK) 
     {
         NSLog(@"Error: failed to prepare statement with message:get IMAGEDB.");
@@ -60,13 +60,12 @@
     while (sqlite3_step(statement) == SQLITE_ROW) 
     {
         int ID2 =  sqlite3_column_int(statement, 0);
-        NSData* imageData = sqlite3_column_blob(statement, 1);
-        const unsigned char *str=sqlite3_column_text(statement, 2);
+        const unsigned char *str = sqlite3_column_text(statement, 1);
+        const unsigned char *lString = sqlite3_column_text(statement, 2);
+        const unsigned char *photourl1 = sqlite3_column_text(statement, 3);
+        const unsigned char *answered = sqlite3_column_text(statement, 4);
         
-        NSLog(@"image_ID=%i",ID2);
-        NSLog(@"read data success!%@",imageData);
-        
-        [array addObject:[NSString stringWithFormat:@"image_%i \n date:%s", ID2,str]];
+       [array addObject:[NSString stringWithFormat:@"image_%i \n timestamp:%s \n question:%s \n photourl:%s \n answered:%s", ID2,str,lString,photourl1,answered]];
         // [array addObject:[NSString stringWithFormat:@"date:%s",str]];
     }
     sqlite3_finalize(statement);
@@ -76,6 +75,7 @@
     [array release];
     
 }
+
 - (void)viewDidLoad 
 {
     [self readDB];
@@ -133,26 +133,23 @@
 	
 	UIImage *image = [UIImage imageNamed:@"first@2x.png"];//图片
     cell.imageView.image = image;
-    
+  /*  
+    UITextView *txtV=[[ UITextView alloc]initWithFrame:CGRectMake(0,0,200,50)];
+    txtV.text = @"111111111dsalkjdasdl;ks;akd;sakl;dklas;kdjfdsklfjlsdjflkdsjfksdjfflkdjslkjf;lsdf;dksl;fksd;lkfds;ksdf;";
+    [cell.contentView addSubview:txtV];
+   */ 
     NSUInteger row = [indexPath row];//显示行
     cell.textLabel.text = [listData objectAtIndex:row];//从数组获取数据
     //	cell.textLabel.font = [UIFont boldSystemFontOfSize:20];//字体大小
     cell.textLabel.font=[UIFont fontWithName:@"Helvetica-Bold" size:12];
-    cell.backgroundColor = [UIColor blueColor];
+ //   cell.backgroundColor = [UIColor brownColor];
     cell.textLabel.textColor = [UIColor redColor];
-    //  cell.textLabel.
-	/*
-     if (row < 7)
-     cell.detailTextLabel.text = @"Mr. Disney";
-     else
-     cell.detailTextLabel.text = @"Mr. Tolkien";
-     */
-    return cell;
+     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath 
 {
-    return 30;//行高
+    return 40;//行高
 }
 
 /*

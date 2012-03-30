@@ -20,6 +20,12 @@
 
 @implementation FirstViewController
 
+@synthesize imgPickerCtrller;//保证了imgPickerCtrller的实施
+@synthesize imageView;
+@synthesize questionField;
+@synthesize labelA;
+@synthesize labelB;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -29,10 +35,6 @@
     }
     return self;
 }
-
-@synthesize imgPickerCtrller;//保证了imgPickerCtrller的实施
-
-@synthesize imageView;
 
 - (NSString *)dataFilePath {//获取数据库路径
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -77,6 +79,29 @@
 
 //static NSString *image_name;//图片名字
 
+
+- (IBAction)textFieldDoneEditing:(id)sender
+{
+  //  NSLog(@"%d",questionField.text.length);
+    [questionField resignFirstResponder];
+}
+
+- (IBAction)takepicture:(id)sender 
+{/*
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        NSArray *temp_MediaTypes = [UIImagePickerController availableMediaTypesForSourceType:picker.sourceType];
+        picker.mediaTypes = temp_MediaTypes;
+        picker.delegate = self;
+      //  picker.allowsImageEditing = YES;    
+    }
+    [self presentModalViewController:picker animated:YES];
+    [picker release];
+    */
+}
+
 -(IBAction)selectPhoto:(id)sender
 {
     UIImagePickerController *imagePicker = [[[UIImagePickerController alloc] init] autorelease];
@@ -84,6 +109,7 @@
     [self presentModalViewController:imagePicker animated:YES];
 }
 
+static NSString *photourl = nil;
 -(IBAction)showInBrowser:(id)sender
 {
     // Initial the S3 Client.
@@ -103,9 +129,11 @@
         
         // Get the URL
         NSURL *url = [s3 getPreSignedURL:gpsur];
-        
+        NSString *urlString = [url absoluteString];//类型转换
+        photourl = urlString;
+        NSLog(@"photourl = %@",photourl);
         // Display the URL in Safari
-        [[UIApplication sharedApplication] openURL:url];
+   //     [[UIApplication sharedApplication] openURL:url];
     }
     @catch (AmazonClientException *exception) {
         [Constants showAlertMessage:exception.message withTitle:@"Browser Error"];
@@ -147,37 +175,6 @@
     [picker dismissModalViewControllerAnimated:YES];
 }
 
-
-/*
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)img editingInfo:(NSDictionary *)editInfo 
-{
-    imgView.image = img;
-    
-    NSMutableString *imageName = [[[NSMutableString alloc] initWithCapacity:0] autorelease];
-    CFUUIDRef theUUID = CFUUIDCreate(kCFAllocatorDefault);
-    if (theUUID) 
-    {
-        [imageName appendString:NSMakeCollectable(CFUUIDCreateString(kCFAllocatorDefault, theUUID))];
-        CFRelease(theUUID);
-    }
-    [imageName appendString:@".png"];
-    image_name = imageName;
-    NSLog(@"imageName is %@",image_name);//获取图片名字
-    
-    //获取图片尺寸
-    UIImageView *im = [[UIImageView alloc] init];
-    im.image = [UIImage imageNamed:@"image_name"];
-    NSLog(@"image.size :%f,%f",[im image].size.width,[im image].size.height) ;    
-    //方法一
-    
-    NSString *path = [[NSBundle mainBundle] pathForResource:@"image_name" ofType:@"png"];
-    UIImage  *img2 = [UIImage imageWithContentsOfFile:path];
-    NSLog(@"Image width:%f,height:%f",img2.size.width,img2.size.height);    
-    //方法二
-    
-    [[picker parentViewController] dismissModalViewControllerAnimated:YES];
-}
-*/
 - (IBAction)Resize:(id)sender
 {
     [UIView beginAnimations:@"show" context:NULL];
@@ -202,74 +199,15 @@
 {
     [imgPickerCtrller release];//保证了imgPickerCtrller的释放
     [imageView release];
+    [questionField release];
+    [labelA release];
+    [labelB release];
     [super dealloc];
 }
-/*
-- (IBAction)grabURL:(id)sender//异步请求
-{
-    NSURL *url = [NSURL URLWithString:@"http://192.168.1.120/yii-guan/project1/index.php?r=post/service"];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];        
-    [request setDelegate:self];
-    [request startAsynchronous];
-}
-- (void)requestFinished:(ASIHTTPRequest *)request
-{
-        // 当以文本形式读取返回内容时用这个方法
-    NSString *responseString = [request responseString];
-    NSLog(@"responseString = %@",responseString);
-        // 当以二进制形式读取返回内容时用这个方法
-    NSData *responseData = [request responseData];
-    NSLog(@"responseData = %@",responseData);
-}
-	 
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
-    NSError *error = [request error];
-}
-*/
 
 - (IBAction)grabURL:(id)sender//同步请求
 {
-    /*//封装soap请求消息
-    NSString *soapMessage = [NSString stringWithFormat:
-                             @"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                             "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n"
-                             "<soap:Body>\n"
-                             "<getHelloRequest xmlns=\"http://192.168.1.120/yii-guan/project1/index.php?r=post/service\">\n"
-                            
-                             "</getHelloRequest>\n"
-                             "</soap:Body>\n"
-                             "</soap:Envelope>\n"
-                             ];
-    NSLog(@"soapMessage=%@",soapMessage);
-    NSURL *url = [NSURL URLWithString:@"http://www.nanonull.com/TimeService/TimeService.asmx"];
-    NSMutableURLRequest *theRequest = [NSMutableURLRequest requestWithURL:url];
-    NSString *msgLength = [NSString stringWithFormat:@"%d", [soapMessage length]];
-    
-    //以下对请求信息添加属性前四句是必有的，第五句是soap信息。
-    [theRequest addValue: @"text/xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-    [theRequest addValue: @"http://www.Nanonull.com/TimeService/getOffesetUTCTime" forHTTPHeaderField:@"SOAPAction"];
-    
-    [theRequest addValue: msgLength forHTTPHeaderField:@"Content-Length"];
-    [theRequest setHTTPMethod:@"POST"];
-    [theRequest setHTTPBody: [soapMessage dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    //请求
-    NSURLConnection *theConnection = [[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
-    NSString *response = [theRequest responseString];
-    NSLog(@"response = %@",response);
-    
-    //如果连接已经建好，则初始化data
-    if( theConnection )
-    {
-        NSData = [[NSMutableData data] retain];
-    }
-    else
-    {
-        NSLog(@"theConnection is NULL");
-    }    */
-    
-    NSURL *url = [NSURL URLWithString:@"http://192.168.1.120/yii-guan/project1/index.php?r=post/service"];
+    NSURL *url = [NSURL URLWithString:@"http://www.baidu.com"];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     [request startSynchronous];
     NSError *error = [request error];
@@ -294,12 +232,11 @@ NSData * UIImageJPEGRepresentation (//图片数据转化为NSData
         sqlite3_close(database);
         NSAssert(0, @"Failed to open database");//类似NSLog
     }
-    NSLog(@"open database success!");  
-    //打开数据库  
+    NSLog(@"open database success!");    //打开数据库 
 	
     char *errorMsg;
     //  NSString *createSQL = @"CREATE TABLE IF NOT EXISTS channel2 (id integer primary key, cid text, title text, imageData BLOB, imageLen integer, imageWeight integer);";
-    NSString *createSQL = @"CREATE TABLE IF NOT EXISTS IMAGE1 (image_ID integer primary key, image BLOB, date text);";
+    NSString *createSQL = @"CREATE TABLE IF NOT EXISTS Front (image_ID integer primary key, timestamp text, text text, photourl text, answered text);";
     
     if (sqlite3_exec (database, [createSQL UTF8String],NULL, NULL, &errorMsg) != SQLITE_OK)//1打开数据库句柄,2SQL语句,34待定,5错误信息
     {
@@ -310,7 +247,7 @@ NSData * UIImageJPEGRepresentation (//图片数据转化为NSData
     NSLog(@"hello1");
     
     //  NSString *query = @"SELECT id, cid, title, imageData, imageLen,imageWeight FROM channel2 ORDER BY id";
-    NSString *query = @"SELECT image_ID, image, date, width, height FROM IMAGE1 ORDER BY image_ID;";
+    NSString *query = @"SELECT * FROM Front ORDER BY image_ID;";
     sqlite3_stmt *statement;
     NSLog(@"hello2");
     int sss = sqlite3_prepare_v2(database, [query UTF8String],-1, &statement, nil);//1打开数据库句柄,2SQL语句,3语句长度,负数为第二参数完整长度,4返回结构体信息,5指向前语句结束位置
@@ -321,23 +258,33 @@ NSData * UIImageJPEGRepresentation (//图片数据转化为NSData
         NSLog(@"DONE=%i",SQLITE_DONE);
         int success = sqlite3_step(statement);
         NSLog(@"success=%i",success);
-        //   NSLog(@"step=%i",sqlite3_step(statement));
         if ( success != SQLITE_DONE) {
             NSLog(@"Error: failed to dehydrate:CREATE TABLE IMAGE");
             return ;
         }
         sqlite3_finalize(statement);
-        NSLog(@"Create table 'IMAGE1' successed.");
+        NSLog(@"Create table 'Front' successed.");
         sqlite3_close(database);
-    }    
-    //建表成功
+    }    //建表成功 
 }
 
 int ID = 1;
 
-
-- (IBAction)insertImageToDB:(id)sender //发送图片信息到数据库
+- (IBAction)Submit:(id)sender //发送图片信息到数据库
 {
+    NSString *lString =questionField.text;
+    if (questionField.text.length == 0)
+    {
+        NSString *msg = nil;
+        msg = [[NSString alloc] initWithFormat:@"please provide a text description!"];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Something was error" message:msg delegate:self cancelButtonTitle:@"Yes!" otherButtonTitles:nil];
+        [alert show];
+        [alert release];
+        [msg release];
+        return;
+    }
+    //弹出模块
+    
     sqlite3 *database;
     if (sqlite3_open([[self dataFilePath] UTF8String], &database)!= SQLITE_OK) 
     {
@@ -349,38 +296,69 @@ int ID = 1;
     
     NSDateFormatter *formatter =[[[NSDateFormatter alloc] init] autorelease];
     NSDate *date = [NSDate date];
-    
     [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
     NSString *str=[formatter stringFromDate:date]; 
     NSLog(@"date = %@",str);        
     //日期    
     
-    UIImageView *im = [[UIImageView alloc] init];
+ /* UIImageView *im = [[UIImageView alloc] init];
     im.image = [UIImage imageNamed:@"image_name"];
-    //  NSLog(@"imagename is %@",image_name);
     NSLog(@"image.size :%f,%f",[im image].size.width,[im image].size.height) ;    
     //图片宽高
-    
-    NSData *data = UIImagePNGRepresentation([UIImage imageNamed:@"image_name"]);
+    //  NSData *data = UIImagePNGRepresentation([UIImage imageNamed:@"image_name"]);
     //  NSUInteger length = [data length];//这个法参数用来计算data数据的大小的
-    sqlite3_stmt *statement;  
-    NSString *query = @"INSERT INTO IMAGE1(image,date) VALUES (?,?);";
     int aaa = sqlite3_prepare_v2(database, [query UTF8String], -1, &statement, NULL);
     NSLog(@"aaa=%i",aaa);
-    NSLog(@"SQLITE_OK=%i",SQLITE_OK);
+    NSLog(@"SQLITE_OK=%i",SQLITE_OK);*/
+    
+    sqlite3_stmt *statement;  
+    NSString *query = @"INSERT INTO Front(timestamp,text,photourl,answered) VALUES (?,?,?,?);";
     if(sqlite3_prepare_v2(database, [query UTF8String], -1, &statement, NULL)!=SQLITE_OK)
     {
         NSLog(@"I have read an error");
         return;
     }
+    //插入数据
+    NSString *answered = nil;
+    //回答模块
+    NSLog(@"photourl = %@",photourl);
+    
     //绑定数据并插入数据
-    sqlite3_bind_blob(statement, 1, [data bytes], -1, SQLITE_TRANSIENT);//这里对应query里的问号，第几个问号，里面的参数就填几
-    sqlite3_bind_text(statement, 2, [str UTF8String], -1, SQLITE_TRANSIENT);  
-    //   sqlite3_bind_double(statement, 3, [im image].size.width);  
-    //   sqlite3_bind_double(statement, 4, [im image].size.height);
+    sqlite3_bind_text(statement, 1, [str UTF8String], -1, SQLITE_TRANSIENT);//这里对应query里的问号，第几个问号，里面的参数就填几
+    sqlite3_bind_text(statement, 2, [lString UTF8String], -1, SQLITE_TRANSIENT);  
+    sqlite3_bind_text(statement, 3, [photourl UTF8String], -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(statement, 4, [answered UTF8String], -1, SQLITE_TRANSIENT);
     
     NSLog(@"insert success!");
     ++ID;
+    sqlite3_step(statement);
+    sqlite3_finalize(statement);
+     
+    char *labelstr1 = "SELECT COUNT(*) FROM Front;";
+    if (sqlite3_prepare_v2(database, labelstr1 , -1, &statement, NULL) != SQLITE_OK) 
+    {
+        NSLog(@"Error: failed to prepare statement with message:read DB.");
+    }
+    while (sqlite3_step(statement) == SQLITE_ROW) 
+    {
+        int result =  sqlite3_column_int(statement, 0);
+        labelA.text = [[NSString alloc]initWithFormat:@"%d",result];
+    }//显示所有问题数
+    
+    sqlite3_step(statement);
+    sqlite3_finalize(statement);
+    char *labelstr2 = "SELECT COUNT(*) FROM Front where answered not null;";
+    if (sqlite3_prepare_v2(database, labelstr2 , -1, &statement, NULL) != SQLITE_OK) 
+    {
+        NSLog(@"Error: failed to prepare statement with message:read DB.");
+    }
+    while (sqlite3_step(statement) == SQLITE_ROW) 
+    {
+        int result =  sqlite3_column_int(statement, 0);
+        labelB.text = [[NSString alloc]initWithFormat:@"%d",result];
+    }//显示已回答问题数
+    
+    //显示查询信息
     sqlite3_step(statement);
     sqlite3_finalize(statement);
     sqlite3_close(database);
@@ -401,24 +379,26 @@ int ID = 1;
     NSLog(@"open database success!"); 
     
     sqlite3_stmt *statement = nil;
-    char *sql = "SELECT * FROM IMAGE1;";
+    char *sql = "SELECT * FROM Front;";
     if (sqlite3_prepare_v2(database, sql, -1, &statement, NULL) != SQLITE_OK) 
     {
-        NSLog(@"Error: failed to prepare statement with message:get IMAGEDB.");
+        NSLog(@"Error: failed to prepare statement with message:read IMAGEDB.");
     }
     
     while (sqlite3_step(statement) == SQLITE_ROW) 
     {
         int ID2 =  sqlite3_column_int(statement, 0);
-        NSData* imageData = sqlite3_column_blob(statement, 1);
-        const unsigned char *str=sqlite3_column_text(statement, 2);
-        //       float width = sqlite3_column_int(statement, 3);
-        //       float height = sqlite3_column_int(statement, 4);
+        const unsigned char *str = sqlite3_column_text(statement, 1);
+        const unsigned char *lString = sqlite3_column_text(statement, 2);
+        const unsigned char *photourl1 = sqlite3_column_text(statement, 3);
+        const unsigned char *answered = sqlite3_column_text(statement, 4);
         
-        NSLog(@"read data success!%@",imageData);
+        NSLog(@"read data success!");
         NSLog(@"image_ID=%i",ID2);
-        NSLog(@"date = %s",str);  
-        //      NSLog(@"Image width:%f,height:%f",width,height); 
+        NSLog(@"timestamp = %s",str);  
+        NSLog(@"question = %s",lString);
+        NSLog(@"photourl = %s",photourl1);
+        NSLog(@"answered = %s",answered);
     }
     sqlite3_finalize(statement);
     sqlite3_close(database);
